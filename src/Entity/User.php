@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -30,6 +32,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    /**
+     * @var Collection<int, UserCompanyRole>
+     */
+    #[ORM\OneToMany(targetEntity: UserCompanyRole::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $userCompanyRoles;
+
+    public function __construct()
+    {
+        $this->userCompanyRoles = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -104,5 +117,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, UserCompanyRole>
+     */
+    public function getUserCompanyRoles(): Collection
+    {
+        return $this->userCompanyRoles;
+    }
+
+    public function addUserCompanyRole(UserCompanyRole $userCompanyRole): static
+    {
+        if (!$this->userCompanyRoles->contains($userCompanyRole)) {
+            $this->userCompanyRoles->add($userCompanyRole);
+            $userCompanyRole->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserCompanyRole(UserCompanyRole $userCompanyRole): static
+    {
+        if ($this->userCompanyRoles->removeElement($userCompanyRole)) {
+            // set the owning side to null (unless already changed)
+            if ($userCompanyRole->getUser() === $this) {
+                $userCompanyRole->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
