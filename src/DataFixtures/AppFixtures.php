@@ -53,13 +53,13 @@ class AppFixtures extends Fixture
         $manager->persist($address2);
 
         $company1 = new Company();
-        $company1->setName('USTS')
+        $company1->setName('Company test')
             ->setAddress($address1)
             ->setSiret("12345678901234");
         $manager->persist($company1);
 
         $company2 = new Company();
-        $company2->setName('USTS2')
+        $company2->setName('Company test 2')
             ->setAddress($address2)
             ->setSiret("12345678901235");
         $manager->persist($company2);
